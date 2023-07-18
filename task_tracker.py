@@ -1,3 +1,5 @@
+import os
+
 class Task:
     def __init__(self, title, description, due_date, priority):
         self.title = title
@@ -12,6 +14,7 @@ class Task:
 class TaskManager:
     def __init__(self):
         self.tasks = []
+        self.file_name = "savedtasks.txt"
 
     def add_task(self, task):
         self.tasks.append(task)
@@ -27,8 +30,38 @@ class TaskManager:
         else:
             print("No tasks found.")
 
+    def save_tasks(self):
+        with open(self.file_name, 'w', encoding='utf-8') as file:
+            for task in self.tasks:
+                file.write("Title: " + task.title + "\n")
+                file.write("Description: " + task.description + "\n")
+                file.write("Due Date: " + task.due_date + "\n")
+                file.write("Priority: " + task.priority + "\n")
+                file.write("Status: " + task.status + "\n")
+                file.write('-' * 20 + '\n')
+
+
+    def load_tasks_from_file(self):
+        if os.path.exists(self.file_name):
+            with open(self.file_name, 'r', encoding='utf-8', errors='replace') as file:
+                task_data = file.read().split('\n' + '-' * 20 + '\n')
+                for data in task_data:
+                    if data:
+                        task_info = data.split('\n')
+                        if len(task_info) >= 5:  # Check if task_info has enough elements
+                            title = task_info[0]
+                            description = task_info[1]
+                            due_date = task_info[2]
+                            priority = task_info[3]
+                            status = task_info[4]
+                            task = Task(title, description, due_date, priority)
+                            task.status = status
+                            self.add_task(task)
+
+
 if __name__ == "__main__":
     task_manager = TaskManager()
+    task_manager.load_tasks_from_file()
 
     while True:
         print("Task Tracker")
@@ -48,6 +81,7 @@ if __name__ == "__main__":
             task = Task(title, description, due_date, priority)
             task_manager.add_task(task)
             print("Task added successfully!")
+            task_manager.save_tasks()
 
         elif choice == "2":
             task_manager.view_tasks()
@@ -56,9 +90,10 @@ if __name__ == "__main__":
                 if 0 <= task_index < len(task_manager.tasks):
                     task_manager.delete_task(task_manager.tasks[task_index])
                     print("Task deleted successfully!")
+                    task_manager.save_tasks()
                 else:
                     print("Invalid task index.")
-        
+
         elif choice == "3":
             print('\n')
             task_manager.view_tasks()
