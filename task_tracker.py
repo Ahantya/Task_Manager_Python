@@ -11,6 +11,7 @@ class Task:
     def __str__(self):
         return f"Title: {self.title}\nDescription: {self.description}\nDue Date: {self.due_date}\nPriority: {self.priority}\nStatus: {self.status}"
 
+
 class TaskManager:
     def __init__(self):
         self.tasks = []
@@ -48,15 +49,18 @@ class TaskManager:
                 for data in task_data:
                     if data:
                         task_info = data.split('\n')
-                        if len(task_info) >= 5:  # Check if task_info has enough elements
-                            title = task_info[0]
-                            description = task_info[1]
-                            due_date = task_info[2]
-                            priority = task_info[3]
-                            status = task_info[4]
-                            task = Task(title, description, due_date, priority)
-                            task.status = status
-                            self.add_task(task)
+                        task = Task(
+                            self._extract_field_value(task_info[0], "Title"),
+                            self._extract_field_value(task_info[1], "Description"),
+                            self._extract_field_value(task_info[2], "Due Date"),
+                            self._extract_field_value(task_info[3], "Priority")
+                        )
+                        task.status = self._extract_field_value(task_info[4], "Status")
+                        self.add_task(task)
+
+    def _extract_field_value(self, field_text, field_label):
+        return field_text.split(field_label + ": ")[1]
+
 
 
 if __name__ == "__main__":
