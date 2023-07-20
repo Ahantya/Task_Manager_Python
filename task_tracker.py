@@ -195,6 +195,13 @@ class TaskManager:
                 return due_time
             except ValueError:
                 print("Invalid time format. Please use HH:MM.")
+    def get_valid_integer_input(self, prompt):
+        while True:
+            user_input = input(prompt)
+            try:
+                return int(user_input)
+            except ValueError:
+                print("Invalid input. Please enter an integer.")
 
     def get_valid_date_input(self, prompt):
         while True:
